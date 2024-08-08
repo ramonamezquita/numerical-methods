@@ -63,15 +63,13 @@ Return the Nth Taylor polynomial around `a`.
 """
 function make_taylorpoly(fname::String, N::Integer, a::Number)::Function
 
+	diff = Differentiables.getinstance(fname)
 
 	"""
 		ncoeff(n::Integer)::Number
 
 	Return the nth Taylor coefficient.
 	"""
-	diff = Differentiables.getinstance(fname)
-
-
 	function ncoeff(n::Integer)::Number
 		if n == 0
 			return diff.fn(a)
@@ -82,6 +80,11 @@ function make_taylorpoly(fname::String, N::Integer, a::Number)::Function
 
 	coefficients = [ncoeff(n) for n ∈ 0:N]
 
+	"""
+		taylorpoly(x::Number)::Number
+
+	Taylor polynomial of order `n` centered around `a`.
+	"""
 	function taylorpoly(x::Number)::Number
 		powers = [(x - a)^n for n ∈ 0:N]
 		dot(coefficients, powers)
