@@ -124,8 +124,22 @@ function step(
 end
 
 
-"""
-Optimizes `loss` functon using the specified `optim`.
+@doc raw"""
+	leastsquares(
+		X,
+		y
+		;
+		optim::Optim = SGD(),
+		θ::Union{Vector{Float64}, Nothing} = nothing,
+		maxiter::Integer = 100,
+		gtol::Float64 = 0.001,
+	)
+
+Optimizes Mean Squared Error loss function defined as,
+
+```math
+MSE(θ) = \frac{1}{2N} \sum_{i=1}^N (y_n - x_n^Tw)^2 = \frac{1}{2N} e^T e
+```
 """
 function leastsquares(
 	X,
