@@ -60,36 +60,40 @@ end
 
 
 """
-	iter(optim::Optim, X::Matrix{Float64})
+	iterXy(optim::Optim, X::Matrix{Float64}, y::Vector{Float64})
 
-`iter` methods provide different ways of iterating over X and y.
+`iterXy` methods provide different ways of iterating over X and y.
 """
-function iter(optim::Optim, X::Matrix{Float64}, y::Vector{Float64})
+function iterXy(optim::Optim, X::Matrix{Float64}, y::Vector{Float64})
 	# ... [implementation sold separately] ...
 end
 
 
 """
-	iter(optim::SGD, X::Matrix{Float64})
+	iterXy(optim::SGD, X::Matrix{Float64}, y::Vector{Float64})
 
-Iterates over X on row at a time.
+Iterates over X and y on row at a time.
 """
-function iter(optim::SGD, X::Matrix{Float64}, y::Vector{Float64})
+function iterXy(optim::SGD, X::Matrix{Float64}, y::Vector{Float64})
+	n = size(X, 1)
+
+	rangeindex = collect(range(start = 1, stop = n, step = 1))
+
 	if optim.shuffle
-		X = X[shuffle(1:end), :]
+		shuffle!(rangeindex)
 	end
 
-	n = size(X, 1)
-	[X[[i], :] for i ∈ 1:n]
+
+	[(X[[i], :], y[[i]]) for i ∈ rangeindex]
 end
 
 
 """
-	iter(optim::BatchGD, X::Matrix{Float64})
+	iterXy(optim::BatchGD, X::Matrix{Float64}, y::Vector{Float64})
 
-Iterates over X in a single pass.
+Iterates over X and y in a single pass.
 """
-function iter(optim::BatchGD, X::Matrix{Float64}, y::Vector{Float64})
+function iterXy(optim::BatchGD, X::Matrix{Float64}, y::Vector{Float64})
 	[(X, y)]
 end
 
@@ -108,7 +112,7 @@ function step(
 	y::Vector{Float64},
 )::Vector{Float64}
 
-	for Xy in iter(optim, X, y)
+	for Xy in iterXy(optim, X, y)
 		X, y = Xy
 		grad = ∇MSE(θ; X = X, y = y)
 		θ = θ - optim.lr * grad
